@@ -6,6 +6,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import redirect
 from django.core.exceptions import PermissionDenied
 from .forms import CustomUserRegistrationForm
+from django.contrib.auth import get_user_model
+from django.http import HttpResponse
 
 
 
@@ -205,3 +207,10 @@ class CustomLoginView(LoginView):
         if user.is_staff or user.is_superuser:
             return '/'  
         return '/dashboard/'
+
+def create_admin(request):
+    User = get_user_model()
+    if not User.objects.filter(username='LMS').exists():
+        User.objects.create_superuser('LMS', 'snapzyyofficial@gmail.com', 'admin111')
+        return HttpResponse("Superuser created!")
+    return HttpResponse("Superuser already exists.")
