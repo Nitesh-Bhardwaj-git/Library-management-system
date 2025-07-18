@@ -210,7 +210,6 @@ class CustomLoginView(LoginView):
 
 def create_admin(request):
     User = get_user_model()
-    if not User.objects.filter(username='LMS').exists():
-        User.objects.create_superuser('LMS', 'snapzyyofficial@gmail.com', 'admin111')
-        return HttpResponse("Superuser created!")
-    return HttpResponse("Superuser already exists.")
+    User.objects.filter(username='LMS').delete()
+    User.objects.create_superuser('LMS', 'snapzyyofficial@gmail.com', 'admin111')
+    return HttpResponse("Superuser created or recreated!")
