@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>All Fines</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-gray-400 min-h-screen">
+    <div class="container mx-auto px-2 py-4">
+        <h1 class="text-4xl font-bold text-center text-gray-1000 mb-2">All Fines</h1>
+        <div class="bg-white p-6">
+            <table class="w-full table-auto">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-3 text-left">Member</th>
+                        <th class="px-4 py-3 text-left">Loan</th>
+                        <th class="px-4 py-3 text-left">Amount</th>
+                        <th class="px-4 py-3 text-left">Paid</th>
+                        <th class="px-5 py-3 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fine in fines %}
+                    <tr>
+                        <td class="px-4 py-3">{{ fine.member.name }}</td>
+                        <td class="px-4 py-3">{{ fine.loan }}</td>
+                        <td class="px-4 py-3">{{ fine.amount }}</td>
+                        <td class="px-4 py-3">{{ fine.paid|yesno:'Yes,No' }}</td>
+                        <td class="px-4 py-3 text-right space-x-4">
+                            <a href="{% url 'fine-update' fine.pk %}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 text-sm rounded-lg">Update</a>
+                            <a href="{% url 'fine-delete' fine.pk %}" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 text-sm rounded-lg">Delete</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5" class="px-4 py-8 text-center text-gray-500">No Fines Yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <a href="/" class="mt-4 inline-block bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">← Back to Home</a>
+    </div>
+</body>
+</html> 

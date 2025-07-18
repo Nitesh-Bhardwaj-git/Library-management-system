@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>Library Management System</title>
+</head>
+<body class="bg-gray-400 min-h-screen">
+    <div class="container mx-auto px-2 py-4">
+    <h1 class="text-4xl font-bold text-center text-gray-1000 mb-2">📚 Library Management System</h1>
+    <div class="bg-gray-300 p-6 max-w-lg mx-auto rounded-lg mt-8">
+    <h2 class="text-2xl font-bold text-gray-900 mb-4">Confirm Delete</h2>
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+        {% if object.title %}
+            <p>Are you sure you want to delete the book "{{ object.title }}"</p>
+        {% elif object.name %}
+            <p>Are you sure you want to delete the member "{{ object.name }}"</p>
+        {% elif object.book and object.member %}
+            <p>Are you sure you want to delete the loan for "{{ object.book }}" borrowed by "{{ object.member }}"</p>
+        {% elif object.amount %}
+            <p>Are you sure you want to delete the fine of RS {{ object.amount }}</p>
+        {% else %}
+            <p>Are you sure you want to delete this item?</p>
+        {% endif %}
+            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 text-sm rounded-lg">
+            Delete</button>
+            </form>
+        <a href="/" class="mt-4 inline-block w-full text-center bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded"> 
+            ← Back to List</a>
+    </div>
+    </div>
+</body>
+</html>

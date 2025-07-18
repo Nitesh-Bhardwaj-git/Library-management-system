@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>All Members</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-gray-400 min-h-screen">
+    <div class="container mx-auto px-2 py-4">
+        <h1 class="text-4xl font-bold text-center text-gray-1000 mb-2">All Members</h1>
+        <div class="bg-white p-6">
+            <table class="w-full table-auto">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-3 text-left">Name</th>
+                        <th class="px-4 py-3 text-left">Email</th>
+                        <th class="px-4 py-3 text-left">Phone</th>
+                        <th class="px-5 py-3 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for member in members %}
+                    <tr>
+                        <td class="px-4 py-3">{{ member.name }}</td>
+                        <td class="px-4 py-3">{{ member.email }}</td>
+                        <td class="px-4 py-3">{{ member.phone }}</td>
+                        <td class="px-4 py-3 text-right space-x-4">
+                            <a href="{% url 'member-update' member.pk %}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 text-sm rounded-lg">Update</a>
+                            <a href="{% url 'member-delete' member.pk %}" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 text-sm rounded-lg">Delete</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" class="px-4 py-8 text-center text-gray-500">No Members Yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <a href="/" class="mt-4 inline-block bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">← Back to Home</a>
+    </div>
+</body>
+</html> 
