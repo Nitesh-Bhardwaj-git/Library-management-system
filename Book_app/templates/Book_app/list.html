@@ -3,237 +3,205 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Library Management System</title>
+    <title>Admin Home - Library Management System</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
-
-<body>
-    <nav class="bg-gray-800 p-4 mb-4">
-        <div class="container mx-auto flex justify-end space-x-4">
-            {% if user.is_authenticated %}
-                {% if user.is_staff %}
-                    <a href="{% url 'home' %}" class="text-white hover:underline">Home</a>
-                {% endif %}
-                <form action="{% url 'logout' %}" method="post" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="text-white hover:underline bg-transparent border-none cursor-pointer p-0 m-0">Logout</button>
-                </form>
-            {% else %}
-                <a href="{% url 'login' %}" class="text-white hover:underline">Login</a>
-                <a href="{% url 'register' %}" class="text-white hover:underline">Register</a>
-            {% endif %}
+<body class="bg-gray-100 min-h-screen">
+    <!-- Navigation Bar -->
+    <nav class="bg-blue-800 p-4 shadow">
+        <div class="container mx-auto flex justify-between items-center">
+            <span class="text-white text-xl font-bold">Library Admin</span>
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 text-sm rounded-lg">Logout</button>
+            </form>
         </div>
     </nav>
-    <div class="bg-gray-400 min-h-screen">
-    <div class="container mx-auto px-2 py-4">
-    <header class="text-center mb-8">      
-    <h1 class="text-4xl font-bold text-center text-gray-1000 mb-2">📚
-    Library Management System</h1>
-    <p class="text-gray-700 font-bold">Manage books, members, loans, and fines.</p>
-    </header>
-
-    {% block content %}
-    <div style="margin-bottom: 50px;">
-        <div class="bg-gray-300 p-6">
-        <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-gray-900">
-        Books Catalogue</h2>
-        <div class="flex space-x-4">
-        <a href="{% url 'book-create' %}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 text-sm rounded-lg">Add New Book</a>
-        <a href="{% url 'book-full-list' %}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 text-sm rounded-lg">View Books</a>
+    <div class="container mx-auto py-10 px-4">
+        <h1 class="text-3xl font-bold text-center text-blue-900 mb-8">Welcome, Admin</h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            <!-- Summary Cards -->
+            <div class="bg-white rounded-lg shadow p-6 flex flex-col items-center">
+                <span class="text-4xl text-blue-600 mb-2">📚</span>
+                <span class="text-lg font-semibold">Books</span>
+                <span class="text-2xl font-bold">{{ recent_books|length }}</span>
+                <a href="{% url 'book-full-list' %}" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">View All</a>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6 flex flex-col items-center">
+                <span class="text-4xl text-green-600 mb-2">👤</span>
+                <span class="text-lg font-semibold">Members</span>
+                <span class="text-2xl font-bold">{{ recent_members|length }}</span>
+                <a href="{% url 'member-full-list' %}" class="mt-4 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">View All</a>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6 flex flex-col items-center">
+                <span class="text-4xl text-yellow-600 mb-2">📄</span>
+                <span class="text-lg font-semibold">Loans</span>
+                <span class="text-2xl font-bold">{{ recent_loans|length }}</span>
+                <a href="{% url 'loan-full-list' %}" class="mt-4 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded">View All</a>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6 flex flex-col items-center">
+                <span class="text-4xl text-red-600 mb-2">💸</span>
+                <span class="text-lg font-semibold">Fines</span>
+                <span class="text-2xl font-bold">{{ recent_fines|length }}</span>
+                <a href="{% url 'fine-full-list' %}" class="mt-4 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">View All</a>
+            </div>
+        </div>
+        <!-- Books Table -->
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-blue-800">Recent Books</h2>
+                <a href="{% url 'book-create' %}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">Add New Book</a>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full table-auto">
+                    <thead class="bg-blue-50">
+                        <tr>
+                            <th class="px-4 py-2 text-left">Title</th>
+                            <th class="px-4 py-2 text-left">Author</th>
+                            <th class="px-4 py-2 text-left">Available</th>
+                            <th class="px-4 py-2 text-left">Total</th>
+                            <th class="px-4 py-2 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for book in recent_books %}
+                        <tr class="border-b hover:bg-blue-50">
+                            <td class="px-4 py-2">{{ book.title }}</td>
+                            <td class="px-4 py-2">{{ book.author }}</td>
+                            <td class="px-4 py-2">{{ book.copies_available }}</td>
+                            <td class="px-4 py-2">{{ book.copies_total }}</td>
+                            <td class="px-4 py-2 text-right space-x-2">
+                                <a href="{% url 'book-update' book.pk %}" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded">Update</a>
+                                <a href="{% url 'book-delete' book.pk %}" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">Delete</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" class="text-center text-gray-500 py-4">No Books Yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Members Table -->
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-green-800">Recent Members</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full table-auto">
+                    <thead class="bg-green-50">
+                        <tr>
+                            <th class="px-4 py-2 text-left">Name</th>
+                            <th class="px-4 py-2 text-left">Email</th>
+                            <th class="px-4 py-2 text-left">Phone</th>
+                            <th class="px-4 py-2 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for member in recent_members %}
+                        <tr class="border-b hover:bg-green-50">
+                            <td class="px-4 py-2">{{ member.name }}</td>
+                            <td class="px-4 py-2">{{ member.email }}</td>
+                            <td class="px-4 py-2">{{ member.phone }}</td>
+                            <td class="px-4 py-2 text-right space-x-2">
+                                <a href="{% url 'member-update' member.pk %}" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded">Update</a>
+                                <a href="{% url 'member-delete' member.pk %}" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">Delete</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-center text-gray-500 py-4">No Members Yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Loans Table -->
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-yellow-800">Recent Loans</h2>
+                <a href="{% url 'loan-create' %}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded">Add New Loan</a>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full table-auto">
+                    <thead class="bg-yellow-50">
+                        <tr>
+                            <th class="px-4 py-2 text-left">Book</th>
+                            <th class="px-4 py-2 text-left">Member</th>
+                            <th class="px-4 py-2 text-left">Loan Date</th>
+                            <th class="px-4 py-2 text-left">Due Date</th>
+                            <th class="px-4 py-2 text-left">Status</th>
+                            <th class="px-4 py-2 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for loan in recent_loans %}
+                        <tr class="border-b hover:bg-yellow-50">
+                            <td class="px-4 py-2">{{ loan.book.title }}</td>
+                            <td class="px-4 py-2">{{ loan.member.name }}</td>
+                            <td class="px-4 py-2">{{ loan.loan_date }}</td>
+                            <td class="px-4 py-2">{{ loan.due_date }}</td>
+                            <td class="px-4 py-2">
+                                {% if loan.status == 'borrowed' %}
+                                    <span class="bg-yellow-200 text-yellow-800 px-2 py-1 rounded text-xs">Borrowed</span>
+                                {% else %}
+                                    <span class="bg-green-200 text-green-800 px-2 py-1 rounded text-xs">Returned</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-2 text-right space-x-2">
+                                <a href="{% url 'loan-update' loan.pk %}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded">Update</a>
+                                <a href="{% url 'loan-delete' loan.pk %}" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">Delete</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="6" class="text-center text-gray-500 py-4">No Loans Yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Fines Table -->
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-red-800">Recent Fines</h2>
+                <a href="{% url 'fine-create' %}" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">Add New Fine</a>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full table-auto">
+                    <thead class="bg-red-50">
+                        <tr>
+                            <th class="px-4 py-2 text-left">Member</th>
+                            <th class="px-4 py-2 text-left">Loan</th>
+                            <th class="px-4 py-2 text-left">Amount</th>
+                            <th class="px-4 py-2 text-left">Paid</th>
+                            <th class="px-4 py-2 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fine in recent_fines %}
+                        <tr class="border-b hover:bg-red-50">
+                            <td class="px-4 py-2">{{ fine.member.name }}</td>
+                            <td class="px-4 py-2">{{ fine.loan }}</td>
+                            <td class="px-4 py-2">{{ fine.amount }}</td>
+                            <td class="px-4 py-2">
+                                {% if fine.paid %}
+                                    <span class="bg-green-200 text-green-800 px-2 py-1 rounded text-xs">Yes</span>
+                                {% else %}
+                                    <span class="bg-red-200 text-red-800 px-2 py-1 rounded text-xs">No</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-2 text-right space-x-2">
+                                <a href="{% url 'fine-update' fine.pk %}" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">Update</a>
+                                <a href="{% url 'fine-delete' fine.pk %}" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">Delete</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" class="text-center text-gray-500 py-4">No Fines Yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-    </div>
-
-    <div class="overflow-x-auto">
-        <div class="bg-white p-6">
-        <table class="w-full table auto">
-        <thead class="bg-primeary text-black">
-            <tr>
-                <th class="px-4 py-3 text-left">Title</th>
-                <th class="px-4 py-3 text-left">Author</th>
-                <th class="px-4 py-3 text-left">Available</th>
-                <th class="px-4 py-3 text-left">Total</th>
-                <th class="px-5 py-3 text-right">Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for book in recent_books %}
-            <tr>
-                <td class="px-4 py-3">{{ book.title }}</td>
-                <td class="px-4 py-3">{{ book.author }}</td>
-                <td class="px-4 py-3">{{ book.copies_available }}</td>
-                <td class="px-4 py-3">{{ book.copies_total }}</td>
-                <td class="px-4 py-3 text-right space-x-4">
-                <a href="{% url 'book-update' book.pk %}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 text-sm rounded-lg">Update</a>
-                <a href="{% url 'book-delete' book.pk %}" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 text-sm rounded-lg">Delete</a>
-                </td>
-            </tr>{% empty %}<tr>
-
-            <td colspan="5" class="px-4 py-8 text-center text-gray-500">No Books Yet.</td>
-        </tr>{% endfor %}
-            </tbody>
-        </table>
-    </div>
-    </div>
-    </div>
-
-    <div style="margin-bottom: 50px;">
-        <div class="bg-gray-300 p-6">
-        <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-gray-900">
-        Members List</h2>
-        <div class="flex space-x-4">
-            <a href="{% url 'member-full-list' %}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 text-sm rounded-lg">View Members</a>
-        </div>
-    </div>
-    </div>
-
-    <div class="overflow-x-auto">
-        <div class="bg-white p-6">
-        <table class="w-full table-auto">
-        <thead class="bg-primary text-black">
-            <tr>
-                <th class="px-4 py-3 text-left">Name</th>
-                <th class="px-4 py-3 text-left">Email</th>
-                <th class="px-4 py-3 text-left">Phone</th>
-                <th class="px-5 py-3 text-right">Actions</th>
-            </tr>
-        </thead>
-
-            {% for member in recent_members %}
-            <tr>
-                <td class="px-4 py-3">{{ member.name }}</td>
-                <td class="px-4 py-3">{{ member.email }}</td>
-                <td class="px-4 py-3">{{ member.phone}}</td>
-                <td class="px-4 py-3 text-right space-x-4">
-                <a href="{% url 'member-update' member.pk %}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 text-sm rounded-lg">Update</a>
-                <a href="{% url 'member-delete' member.pk %}" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 text-sm rounded-lg">Delete</a>
-                </td>
-            </tr>{% empty %}<tr>
-
-            <td colspan="4" class="px-4 py-8 text-center text-gray-500">No Members Yet.</td>
-            </tr>{% endfor %}
-            </tbody>
-        </table>
-        </div>
-        </div>
-    </div>
-
-
-    <div style="margin-bottom: 50px;">
-        <div class="bg-gray-300 p-6">
-        <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-gray-900">
-        Loans Management</h2>
-        <div class="flex space-x-4">
-        <a href="{% url 'loan-create' %}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 text-sm rounded-lg">Add New Loan</a>
-        <a href="{% url 'loan-full-list' %}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 text-sm rounded-lg">View Loans</a>
-        </div>
-    </div>
-    </div>
-
-    <div class="overflow-x-auto">
-        <div class="bg-white p-6">
-        <table class="w-full table-auto">
-        <thead class="bg-primary text-black">
-            <tr>
-                <th class="px-4 py-3 text-left">Book</th>
-                <th class="px-4 py-3 text-left">Member</th>
-                <th class="px-4 py-3 text-left">Loan Date</th>
-                <th class="px-4 py-3 text-left">Due Date</th>
-                <th class="px-4 py-3 text-left">Status</th>
-                <th class="px-5 py-3 text-right">Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-
-            {% for loan in recent_loans %}
-            <tr>
-                <td class="px-4 py-3">{{ loan.book.title }}</td>
-                <td class="px-4 py-3">{{ loan.member.name }}</td>
-                <td class="px-4 py-3">{{ loan.loan_date }}</td>
-                <td class="px-4 py-3">{{ loan.due_date }}</td>
-                <td class="px-4 py-3">
-                {% if loan.status == 'borrowed' %}
-                status-borrowed
-                {% else %}
-                status-returned
-                {% endif %}"
-                    {{ loan.get_status_display }}
-                </td>
-                <td class="px-4 py-3 text-right space-x-4">
-                <a href="{% url 'loan-update' loan.pk %}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 text-sm rounded-lg">Update</a>
-                <a href="{% url 'loan-delete' loan.pk %}" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 text-sm rounded-lg">Delete</a>
-                </td>
-            </tr>{% empty %}<tr>
-
-            <td colspan="6" class="px-4 py-8 text-center text-gray-500">No Loans Yet.</td>
-            </tr>{% endfor %}
-            </tbody>
-        </table>
-        </div>
-    </div>
-    </div>
-
-
-    <div style="margin-bottom: 50px;">
-        <div class="bg-gray-300 p-6">
-        <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-gray-900">
-        Fines Management</h2>
-        <div class="flex space-x-4">
-        <a href="{% url 'fine-create' %}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 text-sm rounded-lg">Add New Fine</a>
-        <a href="{% url 'fine-full-list' %}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 text-sm rounded-lg">View Fines</a>
-        </div>
-    </div>
-    </div>
-
-    <div class="overflow-x-auto">
-        <div class="bg-white p-6">
-        <table class="w-full table-auto">
-        <thead class="bg-primary text-black">
-            <tr>
-                <th class="px-4 py-3 text-left">Member</th>
-                <th class="px-4 py-3 text-left">Loan</th>
-                <th class="px-4 py-3 text-left">Amount</th>
-                <th class="px-4 py-3 text-left">Paid</th>
-                <th class="px-5 py-3 text-right">Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-
-            {% for fine in recent_fines %}
-            <tr>
-                <td class="px-4 py-3">{{ fine.member.name }}</td>
-                <td class="px-4 py-3">{{ fine.loan}}</td>
-                <td class="px-4 py-3">{{ fine.amount }}</td>
-                <td class="px-4 py-3">
-                {% if fine.paid %}
-                paid-yes
-                {% else %}
-                paid-no
-                {% endif %}"
-                {{ fine.get_paid_display }}
-                    
-                </td>
-                <td class="px-4 py-3 text-right space-x-4">
-                <a href="{% url 'fine-update' fine.pk %}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 text-sm rounded-lg">Update</a>
-                <a href="{% url 'fine-delete' fine.pk %}" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 text-sm rounded-lg">Delete</a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-            <td colspan="5" class="px-4 py-8 text-center text-gray-500">No Fines Yet.</td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-        </div>
-        </div>
-    </div>
-    {% endblock %}
-</div>
 </body>
 </html>
 
