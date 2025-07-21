@@ -33,6 +33,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'library-management-system-lb96.onrender.com',
     'library-management-system-1cfk.onrender.com',
+    'library-management-system-ju1d.onrender.com',
     'localhost',
     '127.0.0.1'
 ]
