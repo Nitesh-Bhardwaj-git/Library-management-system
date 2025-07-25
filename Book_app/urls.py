@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 from django.contrib.auth.views import  LogoutView
-from .views import CustomLoginView, BookFullList, MemberFullList, LoanFullList, FineFullList, create_admin
+from .views import CustomLoginView, BookFullList, MemberFullList, LoanFullList, FineFullList
 
 urlpatterns = [
     path('', views.BookList.as_view(), name="home"),
