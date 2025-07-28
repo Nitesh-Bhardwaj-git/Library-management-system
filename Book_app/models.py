@@ -31,7 +31,7 @@ class Loan(models.Model):
     book        = models.ForeignKey(Book, on_delete=models.SET_NULL, null=True)
     member      = models.ForeignKey(Member, on_delete=models.SET_NULL, null=True)
     loan_date   = models.DateField(default=timezone.now)
-    due_date    = models.DateField(max_length=10)
+    due_date    = models.DateField()
     return_date = models.DateField(default=timezone.now)
     status      = models.CharField(default="borrowed", max_length=10, choices=STATUS_CHOICES,)
 

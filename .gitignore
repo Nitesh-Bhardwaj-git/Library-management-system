@@ -1,15 +1,8 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-# Environments
+venv/
+*.log
 .env
-
-# Media files (user uploads)
+.Ds_Store
+db.sqlite3
 media/
-# Static files (collected)
+
 staticfiles/
-# Environment variables
-.env
-# Database files
-*.db
-*.sqlite
-*.sqlite3
