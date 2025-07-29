@@ -180,7 +180,7 @@ The application will be available at `http://127.0.0.1:8000/`
 ### Render.com Deployment
 1. Connect your GitHub repository to Render
 2. Configure environment variables
-3. Set build command: `pip install -r requirements.txt`
+3. Set build command: `pip install -r requirements.txt && python manage.py migrate`
 4. Set start command: `gunicorn Book.wsgi:application`
 5. Deploy!
 
