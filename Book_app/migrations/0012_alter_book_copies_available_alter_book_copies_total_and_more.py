@@ -28,11 +28,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='loan',
             name='due_date',
-            field=models.DateField(max_length=10),
+            field=models.DateField(),
         ),
         migrations.AlterField(
             model_name='loan',
             name='status',
-            field=models.CharField(default='borrowed'),
+            field=models.CharField(default='borrowed', max_length=10),
         ),
     ]

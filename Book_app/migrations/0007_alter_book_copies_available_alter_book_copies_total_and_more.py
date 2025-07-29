@@ -13,16 +13,16 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='book',
             name='copies_available',
-            field=models.CharField(default=3),
+            field=models.IntegerField(default=3),
         ),
         migrations.AlterField(
             model_name='book',
             name='copies_total',
-            field=models.CharField(default=3),
+            field=models.IntegerField(default=3),
         ),
         migrations.AlterField(
             model_name='book',
             name='publication_year',
-            field=models.CharField(blank=True, null=True),
+            field=models.CharField(blank=True, null=True, max_length=4),
         ),
     ]
