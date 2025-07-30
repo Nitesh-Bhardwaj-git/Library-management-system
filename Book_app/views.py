@@ -8,6 +8,7 @@ from django.core.exceptions import PermissionDenied
 from .forms import CustomUserRegistrationForm
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
+import os
 
 
 
@@ -207,3 +208,26 @@ class CustomLoginView(LoginView):
         if user.is_staff or user.is_superuser:
             return '/'  
         return '/dashboard/'
+
+
+class CreateSuperuserView(TemplateView):
+    template_name = 'Book_app/create_superuser.html'
+    
+    def get(self, request, *args, **kwargs):
+        username = os.getenv('DJANGO_SUPERUSER_USERNAME')
+        email = os.getenv('DJANGO_SUPERUSER_EMAIL')
+        password = os.getenv('DJANGO_SUPERUSER_PASSWORD')
+        
+        if not all([username, email, password]):
+            return HttpResponse("Environment variables not set properly", status=400)
+        
+        User = get_user_model()
+        
+        if User.objects.filter(username=username).exists():
+            return HttpResponse(f"Superuser '{username}' already exists")
+        
+        try:
+            User.objects.create_superuser(username, email, password)
+            return HttpResponse(f"Superuser '{username}' created successfully! You can now login.")
+        except Exception as e:
+            return HttpResponse(f"Error creating superuser: {e}", status=500)
