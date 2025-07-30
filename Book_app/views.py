@@ -8,6 +8,8 @@ from django.core.exceptions import PermissionDenied
 from .forms import CustomUserRegistrationForm
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
+from django.views import View
+from django.contrib import messages
 import os
 
 
@@ -210,24 +212,28 @@ class CustomLoginView(LoginView):
         return '/dashboard/'
 
 
-class CreateSuperuserView(TemplateView):
-    template_name = 'Book_app/create_superuser.html'
-    
-    def get(self, request, *args, **kwargs):
-        username = os.getenv('DJANGO_SUPERUSER_USERNAME')
-        email = os.getenv('DJANGO_SUPERUSER_EMAIL')
-        password = os.getenv('DJANGO_SUPERUSER_PASSWORD')
-        
-        if not all([username, email, password]):
-            return HttpResponse("Environment variables not set properly", status=400)
+class CreateSuperuserView(View):
+    def get(self, request):
+        # Only allow if environment variables are set (for security)
+        if not all([
+            os.getenv('DJANGO_SUPERUSER_USERNAME'),
+            os.getenv('DJANGO_SUPERUSER_EMAIL'), 
+            os.getenv('DJANGO_SUPERUSER_PASSWORD')
+        ]):
+            return HttpResponse("Superuser creation not configured", status=403)
         
         User = get_user_model()
+        username = os.getenv('DJANGO_SUPERUSER_USERNAME')
         
         if User.objects.filter(username=username).exists():
             return HttpResponse(f"Superuser '{username}' already exists")
         
         try:
-            User.objects.create_superuser(username, email, password)
+            user = User.objects.create_superuser(
+                username=os.getenv('DJANGO_SUPERUSER_USERNAME'),
+                email=os.getenv('DJANGO_SUPERUSER_EMAIL'),
+                password=os.getenv('DJANGO_SUPERUSER_PASSWORD')
+            )
             return HttpResponse(f"Superuser '{username}' created successfully! You can now login.")
         except Exception as e:
             return HttpResponse(f"Error creating superuser: {e}", status=500)
