@@ -6,9 +6,6 @@ from .views import CustomLoginView, BookFullList, MemberFullList, LoanFullList, 
 urlpatterns = [
     path('', views.BookList.as_view(), name="home"),
     
-    # Temporary superuser creation - REMOVE AFTER USE
-    path('create-superuser/', views.CreateSuperuserView.as_view(), name='create-superuser'),
-    
     path('books/', views.BookList.as_view(), name="book-list"),
     path('book/create/', views.BookCreate.as_view(), name="book-create"),
     path('book/<int:pk>/update/', views.BookUpdate.as_view(), name="book-update"),
