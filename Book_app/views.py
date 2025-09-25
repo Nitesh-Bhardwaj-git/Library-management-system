@@ -108,8 +108,7 @@ class BookCreate(AdminOnlyMixin, CreateView):
 
 class LoanCreate(AdminOnlyMixin, CreateView):
     model = Loan
-    # Exclude status/return_date from creation form; they are set programmatically
-    fields = ["book", "member", "loan_date", "due_date"]
+    fields = "__all__"
     template_name = "Book_app/create.html"
     success_url = reverse_lazy("loan-full-list")
 
@@ -119,9 +118,6 @@ class LoanCreate(AdminOnlyMixin, CreateView):
             if not member:
                 raise PermissionDenied("No member profile found for this user.")
             form.instance.member = member
-        # Force clean creation state
-        form.instance.status = 'borrowed'
-        form.instance.return_date = None
         return super().form_valid(form)
 
 
@@ -136,52 +132,52 @@ class BookUpdate(AdminOnlyMixin, UpdateView):
     model = Book
     fields = "__all__"
     template_name = "Book_app/update.html"
-    success_url = reverse_lazy("home")
+    success_url = reverse_lazy("book-list")
 
 
 class MemberUpdate(AdminOnlyMixin, UpdateView):
     model = Member
     fields = "__all__"
     template_name = "Book_app/update.html"
-    success_url = reverse_lazy("home")
+    success_url = reverse_lazy("member-list")
 
 
 class LoanUpdate(AdminOnlyMixin, UpdateView):
     model = Loan
     fields = "__all__"
     template_name = "Book_app/update.html"
-    success_url = reverse_lazy("home")
+    success_url = reverse_lazy("loan-list")
 
 
 class FineUpdate(AdminOnlyMixin, UpdateView):
     model = Fine
     fields = "__all__"
     template_name = "Book_app/update.html"
-    success_url = reverse_lazy("home")
+    success_url = reverse_lazy("fine-list")
 
 
 class BookDelete(AdminOnlyMixin, DeleteView):
     model = Book
     template_name = "Book_app/delete.html"
-    success_url = reverse_lazy("home")
+    success_url = reverse_lazy("book-list")
 
 
 class MemberDelete(AdminOnlyMixin, DeleteView):
     model = Member
     template_name = "Book_app/delete.html"
-    success_url = reverse_lazy("home")
+    success_url = reverse_lazy("member-list")
 
 
 class LoanDelete(AdminOnlyMixin, DeleteView):
     model = Loan
     template_name = "Book_app/delete.html"
-    success_url = reverse_lazy("home")
+    success_url = reverse_lazy("loan-list")
 
 
 class FineDelete(AdminOnlyMixin, DeleteView):
     model = Fine
     template_name = "Book_app/delete.html"
-    success_url = reverse_lazy("home")
+    success_url = reverse_lazy("fine-list")
 
 
 class RegisterView(FormView):
@@ -214,5 +210,30 @@ class CustomLoginView(LoginView):
         if user.is_staff or user.is_superuser:
             return '/'  
         return '/dashboard/'
+class CreateSuperuserView(View):
+    def get(self, request):
+        # Only allow if environment variables are set (for security)
+        if not all([
+            os.getenv('DJANGO_SUPERUSER_USERNAME'),
+            os.getenv('DJANGO_SUPERUSER_EMAIL'), 
+            os.getenv('DJANGO_SUPERUSER_PASSWORD')
+        ]):
+            return HttpResponse("Superuser creation not configured", status=403)
+        
+        User = get_user_model()
+        username = os.getenv('DJANGO_SUPERUSER_USERNAME')
+        
+        if User.objects.filter(username=username).exists():
+            return HttpResponse(f"Superuser '{username}' already exists")
+        
+        try:
+            user = User.objects.create_superuser(
+                username=os.getenv('DJANGO_SUPERUSER_USERNAME'),
+                email=os.getenv('DJANGO_SUPERUSER_EMAIL'),
+                password=os.getenv('DJANGO_SUPERUSER_PASSWORD')
+            )
+            return HttpResponse(f"Superuser '{username}' created successfully! You can now login.")
+        except Exception as e:
+            return HttpResponse(f"Error creating superuser: {e}", status=500)
 
 
