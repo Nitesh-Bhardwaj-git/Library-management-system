@@ -108,7 +108,8 @@ class BookCreate(AdminOnlyMixin, CreateView):
 
 class LoanCreate(AdminOnlyMixin, CreateView):
     model = Loan
-    fields = "__all__"
+    # Exclude status/return_date from creation form; they are set programmatically
+    fields = ["book", "member", "loan_date", "due_date"]
     template_name = "Book_app/create.html"
     success_url = reverse_lazy("loan-full-list")
 
@@ -118,6 +119,9 @@ class LoanCreate(AdminOnlyMixin, CreateView):
             if not member:
                 raise PermissionDenied("No member profile found for this user.")
             form.instance.member = member
+        # Force clean creation state
+        form.instance.status = 'borrowed'
+        form.instance.return_date = None
         return super().form_valid(form)
 
 
@@ -132,52 +136,52 @@ class BookUpdate(AdminOnlyMixin, UpdateView):
     model = Book
     fields = "__all__"
     template_name = "Book_app/update.html"
-    success_url = reverse_lazy("book-list")
+    success_url = reverse_lazy("home")
 
 
 class MemberUpdate(AdminOnlyMixin, UpdateView):
     model = Member
     fields = "__all__"
     template_name = "Book_app/update.html"
-    success_url = reverse_lazy("member-list")
+    success_url = reverse_lazy("home")
 
 
 class LoanUpdate(AdminOnlyMixin, UpdateView):
     model = Loan
     fields = "__all__"
     template_name = "Book_app/update.html"
-    success_url = reverse_lazy("loan-list")
+    success_url = reverse_lazy("home")
 
 
 class FineUpdate(AdminOnlyMixin, UpdateView):
     model = Fine
     fields = "__all__"
     template_name = "Book_app/update.html"
-    success_url = reverse_lazy("fine-list")
+    success_url = reverse_lazy("home")
 
 
 class BookDelete(AdminOnlyMixin, DeleteView):
     model = Book
     template_name = "Book_app/delete.html"
-    success_url = reverse_lazy("book-list")
+    success_url = reverse_lazy("home")
 
 
 class MemberDelete(AdminOnlyMixin, DeleteView):
     model = Member
     template_name = "Book_app/delete.html"
-    success_url = reverse_lazy("member-list")
+    success_url = reverse_lazy("home")
 
 
 class LoanDelete(AdminOnlyMixin, DeleteView):
     model = Loan
     template_name = "Book_app/delete.html"
-    success_url = reverse_lazy("loan-list")
+    success_url = reverse_lazy("home")
 
 
 class FineDelete(AdminOnlyMixin, DeleteView):
     model = Fine
     template_name = "Book_app/delete.html"
-    success_url = reverse_lazy("fine-list")
+    success_url = reverse_lazy("home")
 
 
 class RegisterView(FormView):
